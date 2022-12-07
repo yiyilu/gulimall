@@ -1,0 +1,14 @@
+server:
+  port: 8000
+spring:
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://localhost:3306/gulimall_ums
+    driver-class-name: com.mysql.cj.jdbc.Driver
+mybatis-plus:
+  #这个是默认的，
+  mapper-locations: classpath*:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
