@@ -1,0 +1,40 @@
+spring:
+  cloud:
+    gateway:
+      #第一个名称为test_route的规则中，接收到的请求需要包含url和baidu两个参数则跳到该url上
+      #like this-> localhost:88?url=baidu
+      routes:
+        - id: test_route
+          uri: https://www.baidu.com
+          predicates:
+            - Query=url,baidu
+        - id: qq_route
+          uri: https://www.aa.com
+          predicates:
+            - Query=url,qq
+
+# 高优先级的路由优先放在前面，比如发/api/product会优先适配到这里的断言
+        - id: product_route
+          uri: lb://gulimall-product
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+        #Path=/api/** 表示只要带api的各种请求都会路由到这个url里面
+        #前端项目，/api
+
+        - id: admin-route
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**
+          #filter里面可以路径重写，也就是把/api/XXX请求重写成/renren-fast/XXX请求
+          #为什么要加上renren-fast，可以看下application.yml里面设置了
+          #servlet:
+          #    context-path: /renren-fast
+          #也就是说admin请求发过来是以/renren-fast/XXX这个形式的
+          filters:
+            - RewritePath=/api/(?<segment>.*),/renren-fast/$\{segment}
+
+
+
